@@ -7,13 +7,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.engine_room.flywheel.lib.util.ShadersModHelper;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
 import net.caffeinemc.mods.sodium.api.util.NormI8;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatDescription;
 import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatRegistry;
 import net.createmod.catnip.render.SpriteShiftEntry;
 import net.createmod.catnip.render.SuperByteBuffer;
@@ -48,6 +48,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
 
     // Vertex Position and Normals
     private final PoseStack transforms = new PoseStack();
+    private final boolean invertFakeDiffuseNormal;
 
     // Vertex Coloring
     private int vertexColor; // aabbggrr
@@ -94,10 +95,15 @@ public class SodiumByteBuffer implements SuperByteBuffer {
     private static long BUFFER_PTR = SCRATCH_BUFFER;
     private static int BUFFED_VERTEX = 0;
 
-    public SodiumByteBuffer(TemplateMesh template, int[] shadeSwapVertices) {
+    public SodiumByteBuffer(TemplateMesh template, int[] shadeSwapVertices, boolean invertFakeDiffuseNormal) {
         this.template = template;
         this.shadeSwapVertices = shadeSwapVertices;
+        this.invertFakeDiffuseNormal = invertFakeDiffuseNormal;
         reset();
+    }
+
+    public SodiumByteBuffer(TemplateMesh template, int[] shadeSwapVertices) {
+        this(template, shadeSwapVertices, false);
     }
 
     public SodiumByteBuffer(TemplateMesh template) {
@@ -279,14 +285,14 @@ public class SodiumByteBuffer implements SuperByteBuffer {
     }
 
     public int getLight(Vector3f lightPos) {
-        return getLight(levelWithLight, lightTransform == null ? lightPos : lightPos.mulPosition(lightTransform));
+        return getLight(levelWithLight, lightTransform == null ? lightPos:lightPos.mulPosition(lightTransform));
     }
 
     private static boolean isBufferMax() {
         return BUFFED_VERTEX >= BUFFER_VERTEX_COUNT;
     }
 
-    private static void flush(VertexBufferWriter writer, boolean force, VertexFormatDescription format) {
+    private static void flush(VertexBufferWriter writer, boolean force, VertexFormat format) {
         if (!force && !isBufferMax()) {
             return;
         }
@@ -325,7 +331,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         return (a << 24) | (b << 16) | (g << 8) | r;
     }
 
-    private void IrisRenderShadowInto(PoseStack input, VertexBufferWriter writer, VertexFormatDescription format) {
+    private void IrisRenderShadowInto(PoseStack input, VertexBufferWriter writer, VertexFormat format) {
         modelMat.set(input.last().pose());
         Matrix4f localTransforms = transforms.last().pose();
         modelMat.mul(localTransforms);
@@ -405,7 +411,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         flush(writer, true, format);
     }
 
-    private void IrisRenderInto(PoseStack input, VertexBufferWriter writer, VertexFormatDescription format) {
+    private void IrisRenderInto(PoseStack input, VertexBufferWriter writer, VertexFormat format) {
         modelMat.set(input.last().pose());
         Matrix4f localTransforms = transforms.last().pose();
         modelMat.mul(localTransforms);
@@ -528,7 +534,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         flush(writer, true, format);
     }
 
-    private void SodiumRenderInto(PoseStack input, VertexBufferWriter writer, VertexFormatDescription format) {
+    private void SodiumRenderInto(PoseStack input, VertexBufferWriter writer, VertexFormat format) {
         modelMat.set(input.last().pose());
         Matrix4f localTransforms = transforms.last().pose();
         modelMat.mul(localTransforms);
@@ -547,7 +553,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             lightDir1.set(RenderSystemAccessor.catnip$getShaderLightDirections()[1]).normalize();
             if (shadeSwapVertices.length > 0) {
                 // Pretend unshaded faces always point up to get the correct max diffuse value for the current level.
-                float3.set(0, 1, 0);
+                float3.set(0, invertFakeDiffuseNormal ? -1:1, 0);
                 // Don't apply the normal matrix since that would cause upside down objects to be dark.
                 unshadedDiffuse = (int) (255 * calculateDiffuse(float3, lightDir0, lightDir1));
             }
@@ -693,7 +699,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             lightDir1.set(RenderSystemAccessor.catnip$getShaderLightDirections()[1]).normalize();
             if (shadeSwapVertices.length > 0) {
                 // Pretend unshaded faces always point up to get the correct max diffuse value for the current level.
-                float3.set(0, 1, 0);
+                float3.set(0, invertFakeDiffuseNormal ? -1:1, 0);
                 // Don't apply the normal matrix since that would cause upside down objects to be dark.
                 unshadedDiffuse = (int) (255 * calculateDiffuse(float3, lightDir0, lightDir1));
             }
@@ -757,7 +763,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
                 overlay = template.overlay(i);
             }
 
-            builder.vertex(pos0.x, pos0.y, pos0.z).color(color).uv(u, v).overlayCoords(overlay).uv2(light).normal(float3.x, float3.y, float3.z).endVertex();
+            builder.addVertex(pos0.x, pos0.y, pos0.z).setColor(color).setUv(u, v).setOverlay(overlay).setLight(light).setNormal(float3.x, float3.y, float3.z);
         }
     }
 
@@ -769,16 +775,15 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         VertexBufferWriter writer = VertexBufferWriter.tryOf(builder);
         if (writer == null) return false;
         if (builder instanceof BufferBuilder bb) {
-            VertexFormatDescription format = VertexFormatRegistry.instance().get(bb.format);
-            if (format == IrisTerrainVertex.FORMAT || format == IrisEntityVertex.FORMAT) {
+            if (bb.format == IrisTerrainVertex.FORMAT || bb.format == IrisEntityVertex.FORMAT) {
                 if (!isShadowPass()) {
-                    IrisRenderInto(input, writer, format);
+                    IrisRenderInto(input, writer, bb.format);
                 } else {
-                    IrisRenderShadowInto(input, writer, format);
+                    IrisRenderShadowInto(input, writer, bb.format);
                 }
                 return true;
-            } else if (format == BlockVertex.FORMAT || format == EntityVertex.FORMAT) {
-                SodiumRenderInto(input, writer, format);
+            } else if (bb.format == BlockVertex.FORMAT || bb.format == EntityVertex.FORMAT) {
+                SodiumRenderInto(input, writer, bb.format);
                 return true;
             }
         }

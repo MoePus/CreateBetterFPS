@@ -4,6 +4,7 @@
   "package": "com.moepus.createbetterfps.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "createbetterfps.refmap.json",
+  "plugin": "com.moepus.createbetterfps.MixinPlugin",
   "mixins": [
     "ShadedBlockSbbBuilderMixin",
     "SuperBufferFactoryMixin",

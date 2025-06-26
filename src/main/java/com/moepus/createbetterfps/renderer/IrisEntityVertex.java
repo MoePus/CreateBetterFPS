@@ -1,16 +1,21 @@
 package com.moepus.createbetterfps.renderer;
 
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatDescription;
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatRegistry;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.ColorAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.LightAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.NormalAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.OverlayAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.PositionAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.TextureAttribute;
+
 import net.irisshaders.iris.uniforms.CapturedRenderingState;
-import net.irisshaders.iris.vertices.IrisVertexFormats;
-import net.caffeinemc.mods.sodium.api.vertex.attributes.common.*;
 
 import org.lwjgl.system.MemoryUtil;
 
 public class IrisEntityVertex {
-	public static final VertexFormatDescription FORMAT;
-	public static final int STRIDE = 56;
+	public static final VertexFormat FORMAT;
+	public static final int STRIDE = 54;
 
 	public IrisEntityVertex() {
 	}
@@ -31,6 +36,6 @@ public class IrisEntityVertex {
 	}
 
 	static {
-		FORMAT = VertexFormatRegistry.instance().get(IrisVertexFormats.ENTITY);
+		FORMAT = IrisCompat.IS_IRIS_INSTALLED ? IrisCompat.GetEntityVertexFormat() : null;
 	}
 }

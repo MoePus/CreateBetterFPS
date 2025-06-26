@@ -1,12 +1,16 @@
 package com.moepus.createbetterfps.renderer;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.caffeinemc.mods.sodium.api.vertex.attributes.common.*;
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatDescription;
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatRegistry;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.ColorAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.LightAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.NormalAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.PositionAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.TextureAttribute;
 
 public class BlockVertex {
-	public static final VertexFormatDescription FORMAT;
+	public static final VertexFormat FORMAT;
 	public static final int STRIDE = 32;
 
 	public BlockVertex() {
@@ -21,6 +25,6 @@ public class BlockVertex {
 	}
 
 	static {
-		FORMAT = VertexFormatRegistry.instance().get(DefaultVertexFormat.BLOCK);
+		FORMAT = DefaultVertexFormat.BLOCK;
 	}
 }

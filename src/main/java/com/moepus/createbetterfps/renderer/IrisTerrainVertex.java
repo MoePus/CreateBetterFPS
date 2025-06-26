@@ -1,16 +1,19 @@
 package com.moepus.createbetterfps.renderer;
 
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatDescription;
-import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatRegistry;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.ColorAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.LightAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.NormalAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.PositionAttribute;
+import net.caffeinemc.mods.sodium.api.vertex.attributes.common.TextureAttribute;
 
 import net.irisshaders.iris.uniforms.CapturedRenderingState;
 
 import org.lwjgl.system.MemoryUtil;
-import net.irisshaders.iris.vertices.IrisVertexFormats;
-import net.caffeinemc.mods.sodium.api.vertex.attributes.common.*;
 
 public class IrisTerrainVertex {
-	public static final VertexFormatDescription FORMAT;
+	public static final VertexFormat FORMAT;
 	public static final int STRIDE = 52;
 
 	public IrisTerrainVertex() {
@@ -31,6 +34,6 @@ public class IrisTerrainVertex {
 	}
 
 	static {
-		FORMAT = VertexFormatRegistry.instance().get(IrisVertexFormats.TERRAIN);
+		FORMAT = IrisCompat.IS_IRIS_INSTALLED ? IrisCompat.GetTerrainVertexFormat() : null;
 	}
 }
