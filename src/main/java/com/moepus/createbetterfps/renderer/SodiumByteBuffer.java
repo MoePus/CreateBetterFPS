@@ -336,9 +336,8 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         Matrix4f localTransforms = transforms.last().pose();
         modelMat.mul(localTransforms);
 
-        PoseStack.Pose pose = input.poseStack.peekFirst();
-        Matrix3f sunNormal = pose.normal();
-        float3.set(sunNormal.m02, sunNormal.m12, sunNormal.m22); // lightDirection
+        normalMat.set(transforms.last().normal());
+        Matrix4f sunMat = ShadowRenderer.MODELVIEW;
 
         boolean isTerrain = (format == IrisTerrainVertex.FORMAT);
 
@@ -352,7 +351,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             float ny = MatrixHelper.transformNormalY(normalMat, unpackedX, unpackedY, unpackedZ);
             float nz = MatrixHelper.transformNormalZ(normalMat, unpackedX, unpackedY, unpackedZ);
 
-            if (float3.dot(nx, ny, nz) >= 0) continue; // backface culling
+            if (nx * sunMat.m02() + ny * sunMat.m12() + nz * sunMat.m22() >= 0) continue; // backface culling
             pos0.set(template.x(i), template.y(i), template.z(i)).mulPosition(modelMat);
             pos1.set(template.x(i + 1), template.y(i + 1), template.z(i + 1)).mulPosition(modelMat);
             pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
