@@ -337,7 +337,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         modelMat.mul(localTransforms);
 
         normalMat.set(transforms.last().normal());
-        Matrix4f sunMat = ShadowRenderer.MODELVIEW;
+        Matrix4f sunMat = IrisCompat.getShadowMV();
 
         boolean isTerrain = (format == IrisTerrainVertex.FORMAT);
 
@@ -766,16 +766,12 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         }
     }
 
-    boolean isShadowPass() {
-        return ShadowRenderer.ACTIVE;
-    }
-
     public boolean renderIntoSodium(PoseStack input, VertexConsumer builder) {
         VertexBufferWriter writer = VertexBufferWriter.tryOf(builder);
         if (writer == null) return false;
         if (builder instanceof BufferBuilder bb) {
             if (bb.format == IrisTerrainVertex.FORMAT || bb.format == IrisEntityVertex.FORMAT) {
-                if (!isShadowPass()) {
+                if (!IrisCompat.isShadowPass()) {
                     IrisRenderInto(input, writer, bb.format);
                 } else {
                     IrisRenderShadowInto(input, writer, bb.format);
