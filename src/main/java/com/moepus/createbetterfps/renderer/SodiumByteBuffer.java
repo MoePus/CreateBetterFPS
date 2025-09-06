@@ -237,9 +237,9 @@ public class SodiumByteBuffer implements SuperByteBuffer {
     public SuperByteBuffer shiftUVtoSheet(SpriteShiftEntry entry, float uTarget, float vTarget, int sheetSize) {
         spriteShiftFunc = (u, v, output) -> {
             float targetU = entry.getTarget()
-                    .getU((SpriteShiftEntry.getUnInterpolatedU(entry.getOriginal(), u) / sheetSize) + uTarget * 16);
+                    .getU((SpriteShiftEntry.getUnInterpolatedU(entry.getOriginal(), u) / sheetSize) + uTarget);
             float targetV = entry.getTarget()
-                    .getV((SpriteShiftEntry.getUnInterpolatedV(entry.getOriginal(), v) / sheetSize) + vTarget * 16);
+                    .getV((SpriteShiftEntry.getUnInterpolatedV(entry.getOriginal(), v) / sheetSize) + vTarget);
             output.accept(targetU, targetV);
         };
         return this;
