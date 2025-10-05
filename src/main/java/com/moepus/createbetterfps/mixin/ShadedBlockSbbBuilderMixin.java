@@ -23,7 +23,7 @@ public abstract class ShadedBlockSbbBuilderMixin {
 
     @Shadow
     @Final
-    protected IntList shadeSwapVertices = new IntArrayList();
+    protected IntList shadeSwapVertices;
 
 
     @Inject(method = "end", at = @At(value = "HEAD"), cancellable = true, require = 0)

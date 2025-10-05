@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SuperByteBufferBuilderMixin {
     @Shadow
     @Final
-    protected MutableTemplateMesh mesh = new MutableTemplateMesh();
+    protected MutableTemplateMesh mesh;
 
     @Shadow
     @Final
-    protected IntList shadeSwapVertices = new IntArrayList();
+    protected IntList shadeSwapVertices;
 
     @Inject(method = "build", at = @At(value = "HEAD"), cancellable = true, require = 0)
     public void onBuild(CallbackInfoReturnable<SuperByteBuffer> cir) {
