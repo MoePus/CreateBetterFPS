@@ -1,11 +1,11 @@
 package com.moepus.createbetterfps;
 
-import net.minecraftforge.fml.common.Mod;
+import net.fabricmc.api.ClientModInitializer;
 
-@Mod(CreateBetterFps.MODID)
-public class CreateBetterFps {
-    public static final String MODID = "createbetterfps";
+public class Createbetterfps implements ClientModInitializer {
 
-    public CreateBetterFps() {
+    @Override
+    public void onInitializeClient() {
+
     }
 }

@@ -1,6 +1,7 @@
 package com.moepus.createbetterfps.renderer;
 
 
+import com.moepus.createbetterfps.mixin.BufferBuilderAccessor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -768,7 +769,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
         VertexBufferWriter writer = VertexBufferWriter.tryOf(builder);
         if (writer == null) return false;
         if (builder instanceof BufferBuilder bb) {
-            VertexFormatDescription format = VertexFormatRegistry.instance().get(bb.format);
+            VertexFormatDescription format = VertexFormatRegistry.instance().get(((BufferBuilderAccessor)bb).getFormat());
             if (format == IrisTerrainVertex.FORMAT || format == IrisEntityVertex.FORMAT) {
                 if (!isShadowPass()) {
                     IrisRenderInto(input, writer, format);

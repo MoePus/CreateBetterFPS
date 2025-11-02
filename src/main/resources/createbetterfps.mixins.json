@@ -2,16 +2,19 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.moepus.createbetterfps.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "refmap": "createbetterfps.refmap.json",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ShadedBlockSbbBuilderMixin",
     "SuperBufferFactoryMixin",
     "SuperByteBufferBuilderMixin"
   ],
   "client": [
+    "BufferBuilderAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
   }
 }
