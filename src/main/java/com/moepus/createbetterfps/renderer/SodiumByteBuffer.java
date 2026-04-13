@@ -430,7 +430,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             pos1.set(template.x(i + 1), template.y(i + 1), template.z(i + 1)).mulPosition(modelMat);
             pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
 
-            if (isPerspectiveProjection) {
+            if (isPerspectiveProjection) { // do backface culling
                 float ex = pos1.x - pos0.x, ey = pos1.y - pos0.y, ez = pos1.z - pos0.z;
                 float fx = pos2.x - pos0.x, fy = pos2.y - pos0.y, fz = pos2.z - pos0.z;
                 float cx = ey * fz - ez * fy;
@@ -581,7 +581,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             pos1.set(template.x(i + 1), template.y(i + 1), template.z(i + 1)).mulPosition(modelMat);
             pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
 
-            if (isPerspectiveProjection) {
+            if (isPerspectiveProjection) { // do backface culling
                 float ex = pos1.x - pos0.x, ey = pos1.y - pos0.y, ez = pos1.z - pos0.z;
                 float fx = pos2.x - pos0.x, fy = pos2.y - pos0.y, fz = pos2.z - pos0.z;
                 float cx = ey * fz - ez * fy;
