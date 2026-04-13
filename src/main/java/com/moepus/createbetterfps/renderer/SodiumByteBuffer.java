@@ -427,11 +427,18 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             float nz = MatrixHelper.transformNormalZ(normalMat, unpackedX, unpackedY, unpackedZ);
 
             pos0.set(template.x(i), template.y(i), template.z(i)).mulPosition(modelMat);
-            pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
-            if (isPerspectiveProjection) { // do backface culling
-                if (nx * (pos0.x + pos2.x) + ny * (pos0.y + pos2.y) + nz * (pos0.z + pos2.z) > 0) continue;
-            }
             pos1.set(template.x(i + 1), template.y(i + 1), template.z(i + 1)).mulPosition(modelMat);
+            pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
+
+            if (isPerspectiveProjection) {
+                float ex = pos1.x - pos0.x, ey = pos1.y - pos0.y, ez = pos1.z - pos0.z;
+                float fx = pos2.x - pos0.x, fy = pos2.y - pos0.y, fz = pos2.z - pos0.z;
+                float cx = ey * fz - ez * fy;
+                float cy = ez * fx - ex * fz;
+                float cz = ex * fy - ey * fx;
+                if (cx * (pos0.x + pos2.x) + cy * (pos0.y + pos2.y) + cz * (pos0.z + pos2.z) > 0) continue;
+            }
+
             pos3.set(template.x(i + 3), template.y(i + 3), template.z(i + 3)).mulPosition(modelMat);
 
             int normal = NormI8.pack(nx, ny, nz);
@@ -571,12 +578,19 @@ public class SodiumByteBuffer implements SuperByteBuffer {
             float nz = MatrixHelper.transformNormalZ(normalMat, unpackedX, unpackedY, unpackedZ);
 
             pos0.set(template.x(i), template.y(i), template.z(i)).mulPosition(modelMat);
-            pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
-            if (isPerspectiveProjection) { // do backface culling
-                if (nx * (pos0.x + pos2.x) + ny * (pos0.y + pos2.y) + nz * (pos0.z + pos2.z) > 0) continue;
-            }
-            int normal = NormI8.pack(nx, ny, nz);
             pos1.set(template.x(i + 1), template.y(i + 1), template.z(i + 1)).mulPosition(modelMat);
+            pos2.set(template.x(i + 2), template.y(i + 2), template.z(i + 2)).mulPosition(modelMat);
+
+            if (isPerspectiveProjection) {
+                float ex = pos1.x - pos0.x, ey = pos1.y - pos0.y, ez = pos1.z - pos0.z;
+                float fx = pos2.x - pos0.x, fy = pos2.y - pos0.y, fz = pos2.z - pos0.z;
+                float cx = ey * fz - ez * fy;
+                float cy = ez * fx - ex * fz;
+                float cz = ex * fy - ey * fx;
+                if (cx * (pos0.x + pos2.x) + cy * (pos0.y + pos2.y) + cz * (pos0.z + pos2.z) > 0) continue;
+            }
+
+            int normal = NormI8.pack(nx, ny, nz);
             pos3.set(template.x(i + 3), template.y(i + 3), template.z(i + 3)).mulPosition(modelMat);
 
             if (spriteShiftFunc != null) {
