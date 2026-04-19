@@ -437,6 +437,9 @@ public class SodiumByteBuffer implements SuperByteBuffer {
                 float cx = ey * fz - ez * fy;
                 float cy = ez * fx - ex * fz;
                 float cz = ex * fy - ey * fx;
+                if (nx * cx + ny * cy + nz * cz < 0) {
+                    cx = -cx; cy = -cy; cz = -cz;
+                }
                 if (cx * (pos0.x + pos2.x) + cy * (pos0.y + pos2.y) + cz * (pos0.z + pos2.z) > 0) continue;
             }
 
@@ -588,6 +591,9 @@ public class SodiumByteBuffer implements SuperByteBuffer {
                 float cx = ey * fz - ez * fy;
                 float cy = ez * fx - ex * fz;
                 float cz = ex * fy - ey * fx;
+                if (nx * cx + ny * cy + nz * cz < 0) {
+                    cx = -cx; cy = -cy; cz = -cz;
+                }
                 if (cx * (pos0.x + pos2.x) + cy * (pos0.y + pos2.y) + cz * (pos0.z + pos2.z) > 0) continue;
             }
 
