@@ -305,7 +305,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
     }
 
     private static boolean isPerspectiveProjection() {
-        return RenderSystem.getModelViewMatrix().m32() == 0;
+        return RenderSystem.getProjectionMatrix().m33() == 0;
     }
 
     private static int calcColorSodium(int quadColor, int vertexColor, int unshadedDiffuse, boolean applyDiffuse, boolean shaded, float nx, float ny, float nz) {
