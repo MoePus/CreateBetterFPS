@@ -1,6 +1,5 @@
 package com.moepus.createbetterfps.renderer;
 
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -305,7 +304,7 @@ public class SodiumByteBuffer implements SuperByteBuffer {
     }
 
     private static boolean isPerspectiveProjection() {
-        return RenderSystem.getModelViewMatrix().m32() == 0;
+        return (RenderSystem.getProjectionMatrix().properties() & Matrix4fc.PROPERTY_PERSPECTIVE) != 0;
     }
 
     private static int calcColorSodium(int quadColor, int vertexColor, int unshadedDiffuse, boolean applyDiffuse, boolean shaded, float nx, float ny, float nz) {
